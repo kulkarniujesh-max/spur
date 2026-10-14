@@ -1,0 +1,8 @@
+.venv/
+.deps/
+__pycache__/
+*.py[cod]
+spur.db
+static/uploads/*
+!.gitkeep
+.env
