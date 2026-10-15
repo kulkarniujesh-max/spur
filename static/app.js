@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeFilter = 'all';
 
   function updateEventResults() {
-    if (!search || !eventCards.length) return;
+    if (!search) return;
     const term = search.value.trim().toLocaleLowerCase();
     let visibleCount = 0;
 
@@ -71,11 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    clearSearch.hidden = !search.value;
-    noResults.hidden = visibleCount > 0;
-    resultCount.textContent = visibleCount === eventCards.length && activeFilter === 'all' && !term
-      ? `${eventCards.length} event${eventCards.length === 1 ? '' : 's'}`
-      : `Showing ${visibleCount} of ${eventCards.length} events`;
+    if (clearSearch) clearSearch.hidden = !search.value;
+    if (noResults) noResults.hidden = visibleCount > 0 || eventCards.length === 0;
+    if (resultCount) {
+      resultCount.textContent = visibleCount === eventCards.length && activeFilter === 'all' && !term
+        ? `${eventCards.length} event${eventCards.length === 1 ? '' : 's'}`
+        : `Showing ${visibleCount} of ${eventCards.length} events`;
+    }
   }
 
   search?.addEventListener('input', updateEventResults);
