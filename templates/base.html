@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="csrf-token" content="{{ csrf_token }}">
   <title>{% block title %}Spur — Campus, in motion{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='preview.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='20261029') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='preview.css', v='20261029') }}">
 </head>
 <body>
   <header class="topbar"><a class="brand" href="{{ url_for('home') }}"><span class="brand-mark">S</span><span>spur<span class="brand-dot">.</span></span></a>
