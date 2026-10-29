@@ -1,13 +1,14 @@
 import os
 import secrets
 import smtplib
+import mimetypes
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
 from functools import wraps
 from pathlib import Path
 
 from flask import (Flask, abort, flash, redirect, render_template, request,
-                   session, url_for)
+                   Response, send_from_directory, session, url_for)
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
@@ -67,6 +68,14 @@ class Student(db.Model):
     admin_requested = db.Column(db.Boolean, default=False, nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     registrations = db.relationship("Registration", backref="student", cascade="all, delete-orphan")
+
+
+class UploadedMedia(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    content_type = db.Column(db.String(120), nullable=False)
+    data = db.Column(db.LargeBinary, nullable=False)
+    created_at = db.Column(db.DateTime, default=local_now, nullable=False)
 
 
 class Event(db.Model):
@@ -163,8 +172,11 @@ def save_upload(file, allowed):
     if "." not in filename or filename.rsplit(".", 1)[1].lower() not in allowed:
         raise ValueError("Please upload a supported image or PDF file.")
     stored = f"{secrets.token_hex(12)}-{filename}"
-    Path(app.config["UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
-    file.save(Path(app.config["UPLOAD_FOLDER"]) / stored)
+    content = file.read()
+    if not content:
+        raise ValueError("The selected file is empty. Choose another file.")
+    content_type = file.mimetype or mimetypes.guess_type(filename)[0] or "application/octet-stream"
+    db.session.add(UploadedMedia(filename=stored, content_type=content_type, data=content))
     return stored
 
 
@@ -195,6 +207,18 @@ def home():
 @app.route("/healthz")
 def health_check():
     return {"status": "ok"}, 200
+
+
+@app.route("/uploads/<filename>")
+def uploaded_media(filename):
+    media = UploadedMedia.query.filter_by(filename=filename).first()
+    if media:
+        return Response(media.data, mimetype=media.content_type,
+                        headers={"Cache-Control": "public, max-age=3600"})
+    # Keep serving files created by earlier local development deployments when present.
+    if (Path(app.config["UPLOAD_FOLDER"]) / filename).is_file():
+        return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+    abort(404)
 
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -389,7 +413,8 @@ def event_form(event=None):
     title, venue, description = data.get("title", "").strip(), data.get("venue", "").strip(), data.get("description", "").strip()
     if not title or not venue or not description or end_at <= start_at:
         raise ValueError("Add a title, venue, description, and an end time after the start time.")
-    photo_names = event.photo_list[:] if event else []
+    removed_photos = set(data.getlist("remove_photos"))
+    photo_names = [name for name in (event.photo_list if event else []) if name not in removed_photos]
     try:
         for photo in request.files.getlist("photos"):
             name = save_upload(photo, ALLOWED_IMAGE_EXTENSIONS)

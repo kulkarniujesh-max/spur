@@ -36,10 +36,10 @@ The included `render.yaml` describes a Render web service and PostgreSQL databas
 
 - Set `SECRET_KEY` to a unique, secret value before deployment; the built-in fallback is for local development only.
 - Set `DATABASE_URL` to a persistent database connection string. SQLite is suitable for a local demo, not a multi-worker public deployment.
-- Put `static/uploads` on persistent storage, or replace local uploads with an object-storage service before deploying across ephemeral instances.
+- New event photos and QR/information files are stored in the configured database so they survive web-service restarts and deployments. Include media in database backups and monitor database size; object storage is a better fit if the media library grows substantially. Files uploaded by older deployments to an ephemeral `static/uploads` folder may need to be uploaded again.
 - Email remains in demo mode until SMTP settings are configured in the hosting provider. Account verification and registration confirmations will not be delivered by email before then.
 - Serve behind an HTTPS reverse proxy and run with a production WSGI server such as Waitress or Gunicorn. Keep debug mode off.
-- Back up the database and uploaded event media together.
+- Back up the database, including its stored event media.
 
 ## Features
 

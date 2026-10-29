@@ -16,8 +16,8 @@
       <div class="gallery-heading"><div><div class="eyebrow eyebrow-muted">EVENT GALLERY</div><h2>{{ event.photo_list|length }} photo{% if event.photo_list|length != 1 %}s{% endif %}</h2></div><span>Select a photo to open it full size</span></div>
       <div class="detail-gallery">
         {% for photo in event.photo_list %}
-        <a class="gallery-item" href="{{ url_for('static', filename='uploads/' ~ photo) }}" target="_blank" rel="noopener" aria-label="Open photo {{ loop.index }} full size">
-          <img src="{{ url_for('static', filename='uploads/' ~ photo) }}" alt="{{ event.title }} photo {{ loop.index }}">
+        <a class="gallery-item" href="{{ url_for('uploaded_media', filename=photo) }}" target="_blank" rel="noopener" aria-label="Open photo {{ loop.index }} full size">
+          <img src="{{ url_for('uploaded_media', filename=photo) }}" alt="{{ event.title }} photo {{ loop.index }}">
           <span>View full size ↗</span>
         </a>
         {% endfor %}
@@ -37,7 +37,7 @@
           <div><span class="fact-icon">◎</span><span><small>WHO CAN JOIN</small><strong>{{ event.branches }}</strong></span></div>
         </div>
         {% if event.qr_file %}
-        <div class="qr-card"><div><div class="eyebrow eyebrow-muted">SCAN & EXPLORE</div><p>More details from the organisers</p></div>{% if event.qr_file.lower().endswith('.pdf') %}<a href="{{ url_for('static', filename='uploads/' ~ event.qr_file) }}" target="_blank" class="button button-outline">Open QR details ↗</a>{% else %}<img src="{{ url_for('static', filename='uploads/' ~ event.qr_file) }}" alt="Event QR code">{% endif %}</div>
+        <div class="qr-card"><div><div class="eyebrow eyebrow-muted">SCAN & EXPLORE</div><p>More details from the organisers</p></div>{% if event.qr_file.lower().endswith('.pdf') %}<a href="{{ url_for('uploaded_media', filename=event.qr_file) }}" target="_blank" class="button button-outline">Open QR details ↗</a>{% else %}<img src="{{ url_for('uploaded_media', filename=event.qr_file) }}" alt="Event QR code">{% endif %}</div>
         {% endif %}
       </div>
       <aside class="register-card"><div class="eyebrow eyebrow-muted">MAKE IT YOURS</div><h3>Save your<br><em>spot.</em></h3><p>Bring your crew along. Add every participant when you register.</p>{% if event.capacity %}<div class="capacity-line">{{ event.participant_count }} / {{ event.capacity }} spots filled</div>{% endif %}{% if registered %}<div class="registered-state">✓ You’re on the list</div>{% elif current_user and not current_user.verified %}<p class="inline-note">Verify your college email before registering.</p>{% elif current_user and now >= event.end_at %}<p class="inline-note">Registration has closed.</p>{% else %}<button class="button button-dark button-wide" data-open-register>Register your crew <span>↗</span></button>{% endif %}<div class="register-foot">✳ &nbsp;Free to join · good vibes included</div></aside>

@@ -1,4 +1,33 @@
+function showMissingImage(image) {
+  const galleryItem = image.closest('.gallery-item');
+  const cardImage = image.closest('.card-image');
+  const existingPhoto = image.closest('.existing-photo');
+  if (!galleryItem && !cardImage && !existingPhoto) return;
+
+  const fallback = document.createElement('div');
+  fallback.className = galleryItem || existingPhoto ? 'gallery-missing' : 'image-placeholder photo-unavailable';
+  fallback.textContent = existingPhoto
+    ? 'This saved photo is missing. Remove it below and upload the original again.'
+    : 'Photo unavailable. An organizer can upload it again.';
+  image.replaceWith(fallback);
+  if (galleryItem) {
+    galleryItem.removeAttribute('href');
+    galleryItem.setAttribute('aria-disabled', 'true');
+    const label = galleryItem.querySelector('span');
+    if (label) label.textContent = 'Photo unavailable';
+    galleryItem.classList.add('gallery-item-missing');
+  }
+}
+
+document.addEventListener('error', event => {
+  if (event.target instanceof HTMLImageElement) showMissingImage(event.target);
+}, true);
+
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.gallery-item img, .card-image img, .existing-photo img').forEach(image => {
+    if (image.complete && image.naturalWidth === 0) showMissingImage(image);
+  });
+
   const token = document.querySelector('meta[name="csrf-token"]')?.content;
   document.querySelectorAll('form[method="post"], form:not([method])').forEach(form => {
     if (!form.querySelector('[name="csrf_token"]')) {

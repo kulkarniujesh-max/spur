@@ -48,3 +48,16 @@
   .registration-roster summary small{text-align:right;max-width:130px}
   .roster-entry{grid-template-columns:1fr;gap:10px;padding:10px}
 }
+.gallery-missing{height:180px;display:grid;place-items:center;padding:18px;background:#f2f5f5;color:var(--muted);font-size:10px;line-height:1.5;text-align:center}
+.gallery-item-missing{cursor:default;border-style:dashed}
+.gallery-item-missing>span{color:var(--muted)}
+.photo-unavailable{padding:12px;color:var(--muted);font-size:10px;text-align:center}
+.existing-photos{min-width:0;margin:0;padding:14px;border:1px solid var(--line);border-radius:6px}
+.existing-photos legend{padding:0 6px;color:var(--ink);font-size:11px;font-weight:700}
+.existing-photos>p{margin:0 0 10px;color:var(--muted);font-size:10px}
+.existing-photo{width:150px;display:flex;flex-direction:column;gap:7px;padding:7px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.existing-photo img{width:100%;height:100px;object-fit:contain;background:#edf3f1}
+.existing-photo .gallery-missing{height:100px}
+.existing-photo>span{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:9px}
+.existing-photo input{width:auto;min-height:auto;margin:0}
+@media(max-width:560px){.gallery-missing{height:125px}.existing-photo{width:calc(50% - 5px)}}
