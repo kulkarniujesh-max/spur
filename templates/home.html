@@ -1,14 +1,25 @@
 {% extends 'base.html' %}{% block title %}Spur — Campus, in motion{% endblock %}{% block content %}
 <section class="hero"><div class="hero-copy"><div class="eyebrow"><span class="pulse-dot"></span> YOUR CAMPUS, HAPPENING NOW</div><h1>Find your<br><em>next thing.</em></h1><p class="hero-text">The clubs, the people, the moments you’ll talk about later. It all starts here.</p><div class="hero-actions"><a class="button button-dark" href="#discover">Explore events <span>↘</span></a><span class="hero-note"><span class="tiny-avatars"><i>✦</i><i>◉</i><i>⌁</i></span> Made for the whole campus</span></div></div>
-  <div class="hero-art"><div class="art-sun"></div><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><div class="art-star star-one">✳</div><div class="art-star star-two">✳</div><div class="art-label label-top">CREATE<br>TOGETHER</div><div class="art-label label-bottom">VPP · 2026</div><div class="art-ticket"><span class="ticket-overline">NEXT UP · CAMPUS LIFE</span><strong>Good things<br>happen here.</strong><span class="ticket-arrow">↗</span></div><div class="art-sticker">YOUR<br>PEOPLE<br>ARE HERE</div></div>
+  <div class="hero-art" aria-hidden="true"><div class="art-sun"></div><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><div class="art-star star-one">✳</div><div class="art-star star-two">✳</div><div class="art-label label-top">CREATE<br>TOGETHER</div><div class="art-label label-bottom">VPP · 2026</div><div class="art-ticket"><span class="ticket-overline">NEXT UP · CAMPUS LIFE</span><strong>Good things<br>happen here.</strong><span class="ticket-arrow">↗</span></div><div class="art-sticker">YOUR<br>PEOPLE<br>ARE HERE</div></div>
 </section>
-<section class="ticker"><div class="ticker-track"><span>MAKE SOMETHING</span><b>✳</b><span>MEET YOUR PEOPLE</span><b>✳</b><span>SHOW UP & SHINE</span><b>✳</b><span>MAKE SOMETHING</span><b>✳</b><span>MEET YOUR PEOPLE</span><b>✳</b><span>SHOW UP & SHINE</span><b>✳</b></div></section>
-<section class="content-section" id="discover"><div class="section-heading"><div><div class="eyebrow eyebrow-muted">RIGHT THIS MOMENT</div><h2>Happening <em>now</em><span class="heading-spark">✳</span></h2></div><span class="section-count">{{ live_events|length }} LIVE EVENT{% if live_events|length != 1 %}S{% endif %}</span></div>
+<section class="ticker" aria-label="Campus inspiration"><div class="ticker-track"><span>MAKE SOMETHING</span><b>✳</b><span>MEET YOUR PEOPLE</span><b>✳</b><span>SHOW UP & SHINE</span><b>✳</b><span>MAKE SOMETHING</span><b>✳</b><span>MEET YOUR PEOPLE</span><b>✳</b><span>SHOW UP & SHINE</span><b>✳</b></div></section>
+<section class="content-section" id="discover">
+  <div class="section-heading"><div><div class="eyebrow eyebrow-muted">RIGHT THIS MOMENT</div><h2>Happening <em>now</em><span class="heading-spark">✳</span></h2></div><span class="section-count">{{ live_events|length }} LIVE EVENT{% if live_events|length != 1 %}S{% endif %}</span></div>
+  <div class="event-tools" role="search">
+    <label class="event-search"><span class="search-icon" aria-hidden="true">⌕</span><input type="search" data-event-search placeholder="Search events, clubs, or venues" aria-label="Search events"><button class="search-clear" type="button" data-clear-search aria-label="Clear search" hidden>×</button></label>
+    <div class="event-filters" aria-label="Filter events">
+      <button class="filter-chip" type="button" data-event-filter="all" aria-pressed="true">All events</button>
+      <button class="filter-chip" type="button" data-event-filter="live" aria-pressed="false">Happening now</button>
+      <button class="filter-chip" type="button" data-event-filter="upcoming" aria-pressed="false">Coming up</button>
+    </div>
+    <p class="event-results" data-event-results aria-live="polite"></p>
+  </div>
   {% if live_events %}<div class="event-grid">{% for event in live_events %}{% include 'event_card.html' %}{% endfor %}</div>{% else %}<div class="empty-state live-empty"><span class="empty-icon">☼</span><div><strong>Quiet for the moment.</strong><p>New things are always around the corner. Check the upcoming list.</p></div></div>{% endif %}
 </section>
 <section class="content-section upcoming-section" id="upcoming"><div class="section-heading"><div><div class="eyebrow eyebrow-muted">SAVE YOUR SPOT</div><h2>Coming <em>up</em></h2></div><span class="section-count">{{ upcoming_events|length }} ON THE CALENDAR</span></div>
   {% if upcoming_events %}<div class="event-grid">{% for event in upcoming_events %}{% include 'event_card.html' %}{% endfor %}</div>{% else %}<div class="empty-state"><span class="empty-icon">✳</span><div><strong>More campus moments are on their way.</strong><p>Check back soon for the next event drop.</p></div></div>{% endif %}
 </section>
+<p class="event-no-results" data-event-no-results hidden><strong>No matching events yet.</strong>Try another name, club, or venue.</p>
 <section class="join-band"><div class="join-mark">S<span>✳</span></div><div><div class="eyebrow">YOUR CAMPUS IS CALLING</div><h2>Don’t just hear about it later.</h2></div><a class="button button-light" href="{{ url_for('signup') }}">Get in the mix <span>↗</span></a></section>
 <dialog class="event-preview-dialog" id="event-preview-dialog"><div id="event-preview-content"></div></dialog>
 {% endblock %}

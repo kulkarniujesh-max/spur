@@ -34,4 +34,62 @@ document.addEventListener('DOMContentLoaded', () => {
     while (existing.length < wanted) existing.push('');
     names.value = existing.slice(0, wanted).join('\n');
   });
+
+  const search = document.querySelector('[data-event-search]');
+  const clearSearch = document.querySelector('[data-clear-search]');
+  const filterButtons = [...document.querySelectorAll('[data-event-filter]')];
+  const resultCount = document.querySelector('[data-event-results]');
+  const noResults = document.querySelector('[data-event-no-results]');
+  const eventCards = [...document.querySelectorAll('.event-card')];
+  let activeFilter = 'all';
+
+  function updateEventResults() {
+    if (!search) return;
+    const term = search.value.trim().toLocaleLowerCase();
+    let visibleCount = 0;
+
+    eventCards.forEach(card => {
+      const section = card.closest('#discover, #upcoming');
+      const eventType = section?.id === 'discover' ? 'live' : 'upcoming';
+      const matchesFilter = activeFilter === 'all' || activeFilter === eventType;
+      const matchesSearch = !term || card.textContent.toLocaleLowerCase().includes(term);
+      card.hidden = !(matchesFilter && matchesSearch);
+      if (!card.hidden) visibleCount += 1;
+    });
+
+    document.querySelectorAll('#discover, #upcoming').forEach(section => {
+      const cards = [...section.querySelectorAll('.event-card')];
+      const sectionType = section.id === 'discover' ? 'live' : 'upcoming';
+      const sectionEligible = activeFilter === 'all' || activeFilter === sectionType;
+      section.hidden = !sectionEligible;
+      if (cards.length) {
+        const visibleInSection = cards.some(card => !card.hidden);
+        const heading = section.querySelector('.section-heading');
+        const grid = section.querySelector('.event-grid');
+        if (heading) heading.hidden = !visibleInSection;
+        if (grid) grid.hidden = !visibleInSection;
+      }
+    });
+
+    if (clearSearch) clearSearch.hidden = !search.value;
+    if (noResults) noResults.hidden = visibleCount > 0 || eventCards.length === 0;
+    if (resultCount) {
+      resultCount.textContent = visibleCount === eventCards.length && activeFilter === 'all' && !term
+        ? `${eventCards.length} event${eventCards.length === 1 ? '' : 's'}`
+        : `Showing ${visibleCount} of ${eventCards.length} events`;
+    }
+  }
+
+  search?.addEventListener('input', updateEventResults);
+  clearSearch?.addEventListener('click', () => {
+    search.value = '';
+    search.focus();
+    updateEventResults();
+  });
+  filterButtons.forEach(button => button.addEventListener('click', () => {
+    activeFilter = button.dataset.eventFilter;
+    filterButtons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+    updateEventResults();
+  }));
+  updateEventResults();
 });
